@@ -1,21 +1,21 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
-const passport = require('passport')
-const passportJWT = require('passport-jwt')
-mongoose.Promise = require('bluebird')
-const ExtractJwt = passportJWT.ExtractJwt
-const JwtStrategy = passportJWT.Strategy
-const User = require('./core/user')
-const auth = require('./core/auth/').route
-const app = express()
-const port = process.env.PORT || 3000
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const passportJWT = require('passport-jwt');
+mongoose.Promise = require('bluebird');
+const ExtractJwt = passportJWT.ExtractJwt;
+const JwtStrategy = passportJWT.Strategy;
+const User = require('./core/user');
+const auth = require('./core/auth/').route;
+const app = express();
+const port = process.env.PORT || 3000;
 let jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeader(),
   secretOrKey: 'ThisIsSecret'
-}
+};
 let strategy = new JwtStrategy(jwtOptions, (jwtPayload, next) => {
-  
+
   User.model.findOne({ _id: jwtPayload.id }, (err, user) => {
     if (err) {
       console.log(err)
@@ -25,8 +25,8 @@ let strategy = new JwtStrategy(jwtOptions, (jwtPayload, next) => {
     } else {
       next(null, false)
     }
-  })
-})
+  });
+});
 const db = mongoose.connect('mongodb://localhost/eden_dev_users', {
   useMongoClient: true
 })

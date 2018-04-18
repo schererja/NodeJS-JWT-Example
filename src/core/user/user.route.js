@@ -1,99 +1,96 @@
-const express = require('express')
-const User = require('./user.model')
-let user = ''
+const express = require('express');
+const User = require('./user.model');
 
-const router = express.Router()
+let user = '';
+
+const router = express.Router();
 router.all((req, res, next) => {
-  
-})
+});
 router.route('/users')
   .get((req, res) => {
     if(!req.user.roles.includes('admin')){
       User.find((err, users) => {
         if (err) {
-          res.send(err)
+          res.send(err);
         }
-        res.json(users)
-      })
+        res.json(users);
+      });
     } else {
       User.find((err, users) => {
         if (err) {
-          res.send(err)
+          res.send(err);
         }
-        res.json(users)
-      })
+        res.json(users);
+      });
     }
 
   })
   .post((req, res) => {
     if(req.user.roles.includes('admin')){
-      console.log('You are an admin')
-    }
+      return res.send(200).end();
+    };
     user = new User({
       username: req.body.username,
       email: req.body.email,
-      password: req.body.password
-    })
+      password: req.body.password,
+    });
     user.save((err) => {
       if (err) {
         // TODO: Check for duplicate
         return res.status(403).json({
-          'code': 403,
-          'message': 'Forbidden',
-          'description': 'Server understood the request, but refused to fulfill it.',
-          'error': err
+          code: 403,
+          message: 'Forbidden',
+          description: 'Server understood the request, but refused to fulfill it.',
+          error: err,
         }).end()
       }
       return res.status(200).json({
-        'code': 200,
-        'message': 'OK',
-        'description': 'Request Successful'
-      }).end()
-    })
-  })
+        code: 200,
+        message: 'OK',
+        description: 'Request Successful',
+      }).end();
+    });
+  });
 router.route('/users/:id')
   .get((req, res) => {
     User.findById(req.params.id, (err, user) => {
       if (err) {
-        res.send(err)
+        res.send(err);
       }
-      res.json(user)
-    })
+      res.json(user);
+    });
   })
   .put((req, res) => {
     User.findById(req.params.id, (err, user) => {
       if (err) {
         return res.status(403).json({
-          'code': 403,
-          'message': 'Forbidden',
-          'description': 'Server understood the request, but refused to fulfill it.',
-          'error': err
-        }).end()
+          code: 403,
+          message: 'Forbidden',
+          description: 'Server understood the request, but refused to fulfill it.',
+          error: err,
+        }).end();
       }
       if (req.body.firstName) {
-        user.firstName = req.body.firstName
+        user = req.body;
         return res.json({
-          'code': '200',
-          'message': 'OK'
-        })
+          code: '200',
+          message: 'OK',
+        });
       }
-      user.username = req.body.username
-      user.password = req.body.password
-      user.firstName = req.body.firstName
-      user.lastName = req.body.lastName
       user.save((err) => {
         if (err) {
           return res.status(403).json({
-            'code': 403,
-            'message': 'Forbidden',
-            'description': 'Server understood the request, but refused to fulfill it.',
-            'error': err
-          }).end()
+            code: 403,
+            message: 'Forbidden',
+            description: 'Server understood the request, but refused to fulfill it.',
+            error: err,
+          }).end();
         }
-      })
-    })
+        return res.status(400).end();
+      });
+    });
   })
   .delete((req, res) => {
-
-  })
-module.exports = router
+    res.status(200);
+  });
+module.exports = router;
