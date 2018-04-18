@@ -1,35 +1,33 @@
 const express = require('express');
 const User = require('./user.model');
 
-let user = '';
-
 const router = express.Router();
 router.all((req, res, next) => {
+  next();
 });
 router.route('/users')
   .get((req, res) => {
-    if(!req.user.roles.includes('admin')){
+    if (!req.user.roles.includes('admin')) {
       User.find((err, users) => {
         if (err) {
-          res.send(err);
+          return res.send(err);
         }
-        res.json(users);
+        return res.json(users);
       });
     } else {
       User.find((err, users) => {
         if (err) {
-          res.send(err);
+          return res.send(err);
         }
-        res.json(users);
+        return res.json(users);
       });
     }
-
   })
   .post((req, res) => {
-    if(req.user.roles.includes('admin')){
+    if (req.user.roles.includes('admin')) {
       return res.send(200).end();
-    };
-    user = new User({
+    }
+    const user = new User({
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
@@ -42,7 +40,7 @@ router.route('/users')
           message: 'Forbidden',
           description: 'Server understood the request, but refused to fulfill it.',
           error: err,
-        }).end()
+        }).end();
       }
       return res.status(200).json({
         code: 200,
@@ -50,6 +48,7 @@ router.route('/users')
         description: 'Request Successful',
       }).end();
     });
+    return null;
   });
 router.route('/users/:id')
   .get((req, res) => {
@@ -61,17 +60,17 @@ router.route('/users/:id')
     });
   })
   .put((req, res) => {
-    User.findById(req.params.id, (err, user) => {
-      if (err) {
+    User.findById(req.params.id, (findErr, user) => {
+      if (findErr) {
         return res.status(403).json({
           code: 403,
           message: 'Forbidden',
           description: 'Server understood the request, but refused to fulfill it.',
-          error: err,
+          error: findErr,
         }).end();
       }
       if (req.body.firstName) {
-        user = req.body;
+        this.user = req.body;
         return res.json({
           code: '200',
           message: 'OK',
@@ -88,7 +87,9 @@ router.route('/users/:id')
         }
         return res.status(400).end();
       });
+      return null;
     });
+    return null;
   })
   .delete((req, res) => {
     res.status(200);

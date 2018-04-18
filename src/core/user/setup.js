@@ -1,19 +1,20 @@
-const mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost/eden_dev_users')
-const User = require('./user.model')
+const mongoose = require('mongoose');
 
-var admin = new User({
+mongoose.connect('mongodb://localhost/eden_dev_users');
+const User = require('./user.model');
+
+const admin = new User({
   username: 'test',
   email: 'test@gmail.com',
   roles: 'admin',
-  password: 'test'
-})
+  password: 'test',
+});
 admin.save((err) => {
   if (err) {
-    throw err
+    throw err;
   }
-  return admin
-})
+  return admin;
+});
 
 /* validatePassword('admin', 'password', (err, validPassword) => {
 

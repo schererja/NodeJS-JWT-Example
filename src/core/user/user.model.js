@@ -1,72 +1,70 @@
-'use strict'
+const mongoose = require('mongoose');
+const crypto = require('crypto');
 
-const mongoose = require('mongoose')
-const crypto = require('crypto')
-
-const Schema = mongoose.Schema
-
+const Schema = mongoose.Schema;
+/* eslint-disable next-line */
 const userSchema = new Schema({
   firstName: {
     type: String,
     trim: true,
-    default: ''
+    default: '',
   },
   lastName: {
     type: String,
     trim: true,
-    default: ''
+    default: '',
   },
   displayName: {
     type: String,
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
     trim: true,
     required: [true, 'email'],
     unique: true,
-    match: [/.+@.+\..+/, 'Please fill a valid email address']
+    match: [/.+@.+\..+/, 'Please fill a valid email address'],
   },
   username: {
     type: String,
     required: [true, 'username'],
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
-    required: [true, 'password']
+    required: [true, 'password'],
   },
   salt: {
     type: String,
-    required: [true, 'salt']
+    required: [true, 'salt'],
   },
   created_at: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   updated_at: {
-    type: Date
+    type: Date,
   },
   roles: {
     type: [{
       type: String,
-      enum: ['customer', 'admin', 'user']
+      enum: ['customer', 'admin', 'user'],
     }],
-    default: ['user']
+    default: ['user'],
   },
   reset_password_token: {
-    type: String
+    type: String,
   },
   reset_password_expires: {
-    type: Date
+    type: Date,
   },
   active: {
     default: true,
     required: true,
-    type: Boolean
-  }
+    type: Boolean,
+  },
 
-})
+});
 /**
  * Used to create a salt of a given length
  *
@@ -75,13 +73,13 @@ const userSchema = new Schema({
  */
 const createSalt = (length, callback) => {
   if (length <= 0) {
-    return callback(new Error('Length needs to be greater than 0.'))
+    return callback(new Error('Length needs to be greater than 0.'));
   }
-  let salt = crypto.randomBytes(Math.ceil(length / 2))
+  const salt = crypto.randomBytes(Math.ceil(length / 2))
     .toString('hex')
-    .slice(0, length)
-  callback(null, salt)
-}
+    .slice(0, length);
+  return callback(null, salt);
+};
 /**
  * UserSchema method to create the hashed password
  *
@@ -90,24 +88,24 @@ const createSalt = (length, callback) => {
  */
 userSchema.methods.createHashedPassed = (password, salt, callback) => {
   if (salt) {
-    let hashedPass = crypto.createHmac('sha512', salt).update(password).digest('hex')
+    const hashedPass = crypto.createHmac('sha512', salt).update(password).digest('hex');
     callback(null, {
-      hashedPass: hashedPass,
-      salt: salt
-    })
+      hashedPass,
+      salt,
+    });
   } else {
-    createSalt(12, (err, salt) => {
+    createSalt(12, (err, createdSalt) => {
       if (err) {
-        return callback(err)
+        return callback(err);
       }
-      let hashedPass = crypto.createHmac('sha512', salt).update(password).digest('hex')
-      callback(null, {
-        hashedPass: hashedPass,
-        salt: salt
-      })
-    })
+      const hashedPass = crypto.createHmac('sha512', createdSalt).update(password).digest('hex');
+      return callback(null, {
+        hashedPass,
+        createdSalt,
+      });
+    });
   }
-}
+};
 
 /**
  * UserSchema method to validate password
@@ -116,59 +114,58 @@ userSchema.methods.createHashedPassed = (password, salt, callback) => {
  * @param {string} password - String for the password
  */
 userSchema.methods.validatePassword = (username, password) => {
-  let User = mongoose.model('User', userSchema)
-  User.findOne({ username: username }, (err, user) => {
+  const User = mongoose.model('User', userSchema);
+  User.findOne({ username }, (err, user) => {
     if (err) {
       // FIXME: This should be handled not thrown
-      throw err
+      throw err;
     }
-    let hashedPass = crypto.createHmac('sha512', user.salt)
-      .update(password).digest('hex')
+    const hashedPass = crypto.createHmac('sha512', user.salt)
+      .update(password).digest('hex');
     if (hashedPass === user.password) {
-      return true
-    } else {
-      return false
+      return true;
     }
-  })
-}
+    return false;
+  });
+};
 
 userSchema.pre('validate', function (next) {
-  var user = this
-  var salt = false
+  const user = this;
+  const salt = false;
   if (!user.isModified('password')) {
 
   } else {
     user.createHashedPassed(user.password, salt, (err, hashedPass) => {
       if (err) {
         // FIXME: This should be handled not thrown
-        throw err
+        throw err;
       }
-      user.password = hashedPass.hashedPass
-      user.salt = hashedPass.salt
-    })
+      user.password = hashedPass.hashedPass;
+      user.salt = hashedPass.salt;
+    });
   }
   // Used for date updates and current date
-  let currentDate = new Date()
-  this.updated_at = currentDate
+  const currentDate = new Date();
+  this.updated_at = currentDate;
   if (!this.created_at) {
-    this.created_at = currentDate
+    this.created_at = currentDate;
   }
-  next()
-})
+  next();
+});
 // TODO: NOT WORKING?
 userSchema.set('toJSON', {
-  transform: (doc, ret, options) => {
-    let retJSON = {
+  transform: (doc, ret) => {
+    const retJSON = {
       firstName: ret.firstName,
       lastName: ret.lastName,
       username: ret.username,
       displayName: ret.displayName,
       email: ret.email,
       active: ret.active,
-      roles: ret.roles
-    }
-    return retJSON
-  }
-})
+      roles: ret.roles,
+    };
+    return retJSON;
+  },
+});
 
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('User', userSchema);
