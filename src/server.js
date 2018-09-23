@@ -28,7 +28,7 @@ const strategy = new JwtStrategy(jwtOptions, (jwtPayload, next) => {
     }
   });
 });
-const db = mongoose.connect('mongodb://localhost/eden_dev_users', {
+const db = mongoose.connect('mongodb://localhost/users', {
   useMongoClient: true,
 });
 passport.use(strategy);

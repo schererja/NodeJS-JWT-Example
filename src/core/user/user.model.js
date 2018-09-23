@@ -4,20 +4,6 @@ const crypto = require('crypto');
 const Schema = mongoose.Schema;
 /* eslint-disable next-line */
 const userSchema = new Schema({
-  firstName: {
-    type: String,
-    trim: true,
-    default: '',
-  },
-  lastName: {
-    type: String,
-    trim: true,
-    default: '',
-  },
-  displayName: {
-    type: String,
-    trim: true,
-  },
   email: {
     type: String,
     trim: true,
@@ -140,6 +126,7 @@ userSchema.pre('validate', function (next) {
         // FIXME: This should be handled not thrown
         throw err;
       }
+      
       user.password = hashedPass.hashedPass;
       user.salt = hashedPass.salt;
     });

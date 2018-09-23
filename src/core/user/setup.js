@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/eden_dev_users');
+mongoose.connect('mongodb://localhost/users');
 const User = require('./user.model');
 
 const admin = new User({

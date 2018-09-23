@@ -1,36 +1,39 @@
 {
-  "name": "eden",
+  "name": "nodejs-jwt-example",
   "version": "0.0.1",
-  "description": "End to end business software",
+  "description": "Node JS JWT Example with Passport",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "www.github.com/schererja/eden"
+    "url": "www.github.com/schererja/nodejs-jwt-example"
   },
   "keywords": [
-    "Business",
-    "Home"
+    "Passport",
+    "JWT",
+    "Mongodb"
   ],
   "author": "Jason Scherer",
   "license": "ISC",
   "dependencies": {
-    "bluebird": "^3.5.1",
-    "body-parser": "^1.18.2",
+    "bluebird": "^3.5.2",
+    "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "jsonwebtoken": "^7.4.3",
-    "mongoose": "^4.13.12",
-    "morgan": "^1.9.0",
+    "mongoose": "^4.13.17",
+    "morgan": "^1.9.1",
     "passport": "^0.3.2",
     "passport-jwt": "^2.2.1"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.17.0",
+    "@types/express": "^4.16.0",
     "eslint-config-airbnb": "^16.1.0",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.7.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-react": "^7.11.1",
     "gulp": "^3.9.1",
     "gulp-eslint": "^4.0.2",
     "gulp-nodemon": "^2.2.1"
