@@ -13,7 +13,7 @@ const auth = require('./core/auth/').route;
 const app = express();
 const port = process.env.PORT || 3000;
 const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeader(),
+  jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"),
   secretOrKey: 'ThisIsSecret',
 };
 const strategy = new JwtStrategy(jwtOptions, (jwtPayload, next) => {
@@ -28,7 +28,7 @@ const strategy = new JwtStrategy(jwtOptions, (jwtPayload, next) => {
     }
   });
 });
-const db = mongoose.connect('mongodb://localhost/users', {
+const db = mongoose.connect('mongodb://node-dev:password@mongo:27017/users', {
   useMongoClient: true,
 });
 passport.use(strategy);
