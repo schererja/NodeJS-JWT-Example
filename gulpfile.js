@@ -27,4 +27,4 @@ gulp.task('start', () => {
 });
 
 // Default Task
-gulp.task('default', ['start', 'lint', 'watch']);
+gulp.task('default', gulp.series(['start', 'lint', 'watch']));
